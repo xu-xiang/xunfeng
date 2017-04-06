@@ -34,7 +34,7 @@ RUN mkdir -p /opt/xunfeng
 COPY . /opt/xunfeng
 
 RUN mkdir /root/xunfeng \
-    && mv /opt/xunfeng/masscan /root/xunfeng/masscan
+    && mv /opt/xunfeng/masscan /root/xunfeng/masscan/
 
 RUN set -x \
     && pip install -r /opt/xunfeng/requirements.txt \
