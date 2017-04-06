@@ -41,7 +41,7 @@ RUN set -x \
     && ln -s /usr/lib/x86_64-linux-gnu/libpcap.so /usr/lib/x86_64-linux-gnu/libpcap.so.1
 
 RUN set -x \
-    && chmod a+x /opt/xunfeng/masscan/linux_64/masscan \
+    && chmod a+x /root/xunfeng/masscan/linux_64/masscan \
     && chmod a+x /opt/xunfeng/dockerconf/start.sh
 
 WORKDIR /opt/xunfeng
