@@ -33,6 +33,9 @@ ENV PATH /opt/mongodb/bin:$PATH
 RUN mkdir -p /opt/xunfeng
 COPY . /opt/xunfeng
 
+RUN mkdir /root/xunfeng \
+    && mv -r /opt/xunfeng/masscan /root/xunfeng/masscan/
+
 RUN set -x \
     && pip install -r /opt/xunfeng/requirements.txt \
     && ln -s /usr/lib/x86_64-linux-gnu/libpcap.so /usr/lib/x86_64-linux-gnu/libpcap.so.1
