@@ -17,9 +17,11 @@ class ThreadNum(threading.Thread):
 
     def run(self):
         while True:
-            if self.queue.empty(): break
             try:
                 task_host = self.queue.get(block=False)
+            except:
+                break
+            try:
                 if self.mode:
                     port_list = AC_PORT_LIST[task_host]
                 else:
