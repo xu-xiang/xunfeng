@@ -3,13 +3,14 @@
 
 **巡风**是一款适用于企业内网的`漏洞快速应急、巡航扫描`系统，通过搜索功能可清晰的了解内部网络资产分布情况，并且可指定漏洞插件对搜索结果进行快速漏洞检测并输出结果报表。
 
+**本软件只做初步探测，无攻击性行为。请使用者遵守《[中华人民共和国网络安全法](http://www.npc.gov.cn/npc/xinwen/2016-11/07/content_2001605.htm)》，勿将巡风用于非授权的测试，YSRC/同程安全应急响应中心/同程网络科技股份有限公司不负任何连带法律责任。**
+
 其主体分为两部分：`网络资产识别引擎`，`漏洞检测引擎`。
 
 网络资产识别引擎会通过用户配置的IP范围`定期自动`的进行端口探测（支持调用MASSCAN），并进行指纹识别，识别内容包括：服务类型、组件容器、脚本语言、CMS。
 
 漏洞检测引擎会根据用户指定的`任务规则`进行定期或者一次性的漏洞检测，其支持2种插件类型、标示符与脚本，均可通过web控制台进行添加。
 
-如果你不是从公众号看过来的，可以[看下](http://mp.weixin.qq.com/s/sFDY8vzonIW2gAcw0CCkzQ)，说了一些部署的注意点。
 
 ## 安装指南
 
@@ -21,12 +22,13 @@
 * [OSX 安装指南](./docs/install/OSX.md)
 * [Linux 安装指南](./docs/install/Linux.md)
 * [Docker 安装指南](./docs/install/Docker.md)
-
+* [Linux 一条命令安装](./docs/install/Linux_AutoInstall.md)
 
 ## 配置指南
 - 在配置-爬虫引擎-网络资产探测列表 设置内网IP段**（必须配置，否则无法正常使用,每个IP段最大限制为10个B段）**。
 - 在配置-爬虫引擎-资产探测周期 设置计划规则。
 - 可启用MASSCAN(探测范围为全端口)代替默认的端口探测脚本，需安装好MASSCAN后配置**程序完整绝对路径**，点击开启即可完成切换。
+  MASSCAN需chmod +x 给执行权限，并手动执行确保可正常运行后再开启。
 - 其他配置根据自身需要进行修改。
 
 ## 插件编写
@@ -67,8 +69,8 @@ def check(ip, port, timeout): # 漏洞检测代码
                 ftp.timeout = timeout
                 ftp.connect(ip, port)
                 ftp.login(user, pass_)
-                if pass_ == '': pass_ = "null"
-                if user == 'ftp' and pass_ == 'ftp: return u"可匿名登录"
+                if pass_ == '': pass_ = 'null'
+                if user == 'ftp' and pass_ == 'ftp': return u"可匿名登录"
                 return u"存在弱口令，账号：%s，密码：%s" % (user, pass_)  # 成功返回结果，内容显示在扫描结果页面。
             except:
                 pass
@@ -97,9 +99,9 @@ def get_plugin_info():  # 插件描述信息
             "keyword": "server:couchdb",  # 推荐搜索关键字
     }
 
-def get_ver_ip():
+def get_ver_ip(ip):
     csock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    csock.connect(('8.8.8.8', 80))
+    csock.connect((ip, 80))
     (addr, port) = csock.getsockname()
     csock.close()
     return addr
@@ -132,7 +134,7 @@ def check(ip,port,timeout):
         urllib2.urlopen(req_exec)
     except:
         pass
-    check = urllib2.urlopen("http://%s/%s"%(server_ip,rand_str)).read()
+    check = urllib2.urlopen("http://%s:8088/%s"%(server_ip,rand_str)).read()
     if 'YES' in check:
         return u"未授权访问"
 ```

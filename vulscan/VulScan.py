@@ -56,10 +56,10 @@ class vulscan():
                 setattr(plugin_res, "PASSWORD_DIC", PASSWORD_DIC)  # 给插件声明密码字典
                 PLUGIN_DB[plugin_filename] = plugin_res
             try:
-                self.result_info = PLUGIN_DB[plugin_filename].check(self.task_netloc[0], int(self.task_netloc[1]),
+                self.result_info = PLUGIN_DB[plugin_filename].check(str(self.task_netloc[0]), int(self.task_netloc[1]),
                                                                     TIMEOUT)
             except:
-                pass
+                return
         self.save_request()  # 保存结果
 
     def get_plugin_info(self):
@@ -121,7 +121,7 @@ class vulscan():
         elif an_type == 'md5':
             md5 = hashlib.md5()
             md5.update(res_html)
-            if md5.hexdigest() == analyzingdata: self.request_info = vul_tag
+            if md5.hexdigest() == analyzingdata: self.result_info = vul_tag
 
     def save_request(self):
         if self.result_info:

@@ -25,6 +25,15 @@ def Search():
     return render_template('search.html')
 
 
+# 删除所有
+@app.route('/deleteall', methods=['post'])
+@logincheck
+@anticsrf
+def Deleteall():
+    Mongo.coll['Task'].remove({})
+    return 'success'
+
+
 # 搜索结果页
 @app.route('/')
 @logincheck
@@ -471,10 +480,10 @@ def PullUpdate():
     if j:
         try:
             remotelist = json.loads(j)
-            remotelist_temp = copy.deepcopy(remotelist)
+            #remotelist_temp = copy.deepcopy(remotelist)
             plugin = Mongo.coll['Plugin'].find({'source': 1})
             for p in plugin:
-                for remote in remotelist_temp:
+                for remote in remotelist:
                     if p['name'] == remote['name'] and remote['coverage'] == 0:
                         remotelist.remove(remote)
             locallist = Mongo.coll['Update'].aggregate([{'$project': {'_id': 0, 'unicode': 1}}])
@@ -515,7 +524,10 @@ def installplugin():
     json_string = {'add_time': datetime.now(), 'count': 0, 'source': 1}
     file_name = secure_filename(item['location'].split('/')[-1])
     if os.path.exists(file_path + file_name):
-        db_record = Mongo.coll['Plugin'].find_one({'filename': file_name.split('.')[0]})
+        if ".py" in file_name:
+            db_record = Mongo.coll['Plugin'].find_one({'filename': file_name.split('.')[0]})
+        else:
+            db_record = Mongo.coll['Plugin'].find_one({'filename': file_name})
         if not db_record or not db_record['source'] == 1:
             file_name = file_name.split('.')[0] + '_' + str(datetime.now().second) + '.' + \
                         file_name.split('.')[-1]
